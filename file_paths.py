@@ -152,4 +152,147 @@ file_path = "20251031_192549dmeidentity.bin"
 
 file_path = "20251029_213420torque.bin"
 
+
+# === Full OWON Header ===
+# {
+#     "MODEL": "306400101",
+#     "IDN": "OWON,XDS3064E,2009110,V2.3.1",
+#     "channel": [
+#         {
+#             "Index": "CH1",
+#             "Availability_Flag": "TRUE",
+#             "Display_Switch": "OFF",
+#             "Wave_Character": "CH1",
+#             "Sample_Rate": "(1MS/s)",
+#             "Acqu_Mode": "SAMPle",
+#             "Storage_Depth": "10K",
+#             "Display_Mode": "Normal",
+#             "Hscale": "500us",
+#             "Vscale": "100mV",
+#             "Reference_Zero": "-150",
+#             "Scroll_Pos_Time": "0.000000us",
+#             "Trig_After_Time": "43900.000000us",
+#             "Trig_Tops_Tme": "43900.000000us",
+#             "Adc_Data_Time": "1.000000us",
+#             "Adc_Data0_Time": "0.000000us",
+#             "Voltage_Rate": "0.015625mv",
+#             "Data_Length": "10000",
+#             "Probe_Magnification": "10X",
+#             "Current_Rate": 10000.0,
+#             "Current_Ratio": 1.5625,
+#             "Measure_Current_Switch": "OFF",
+#             "Cyc": "999.904000us",
+#             "Freq": "1000.096009Hz",
+#             "PRECISION": 0
+#         },
+#         {
+#             "Index": "CH2",
+#             "Availability_Flag": "TRUE",
+#             "Display_Switch": "OFF",
+#             "Wave_Character": "CH2",
+#             "Sample_Rate": "(1MS/s)",
+#             "Acqu_Mode": "SAMPle",
+#             "Storage_Depth": "10K",
+#             "Display_Mode": "Normal",
+#             "Hscale": "500us",
+#             "Vscale": "500mV",
+#             "Reference_Zero": "-90",
+#             "Scroll_Pos_Time": "0.000000us",
+#             "Trig_After_Time": "43900.000000us",
+#             "Trig_Tops_Tme": "43900.000000us",
+#             "Adc_Data_Time": "1.000000us",
+#             "Adc_Data0_Time": "0.000000us",
+#             "Voltage_Rate": "0.078125mv",
+#             "Data_Length": "10000",
+#             "Probe_Magnification": "10X",
+#             "Current_Rate": 100000.0,
+#             "Current_Ratio": 78.125,
+#             "Measure_Current_Switch": "OFF",
+#             "Cyc": "999.904000us",
+#             "Freq": "1000.096009Hz",
+#             "PRECISION": 0
+#         }
+#     ]
+# }
+# ========================================
+file_path = "20251102_0842162sigs.bin"
+
+
 # --------------------------
+
+# === Full OWON Header ===
+# {
+#     "TIMEBASE": {
+#         "SCALE": "500ms",
+#         "HOFFSET": 120
+#     },
+#     "SAMPLE": {
+#         "FULLSCREEN": 7600000,
+#         "SLOWMOVE": 10000000,
+#         "DATALEN": 10000000,
+#         "SAMPLERATE": "(1MS/s)",
+#         "TYPE": "SAMPle",
+#         "DEPMEM": "10M",
+#         "SCREENOFFSET": 2400000
+#     },
+#     "CHANNEL": [
+#         {
+#             "NAME": "CH1",
+#             "DISPLAY": "ON",
+#             "Current_Rate": 10000.0,
+#             "Current_Ratio": 3.125,
+#             "Measure_Current_Switch": "OFF",
+#             "COUPLING": "DC",
+#             "PROBE": "10X",
+#             "SCALE": "200mV",
+#             "OFFSET": -117,
+#             "FREQUENCE": 50.93609,
+#             "INVERSE": "OFF"
+#         },
+#         {
+#             "NAME": "CH2",
+#             "DISPLAY": "ON",
+#             "Current_Rate": 100000.0,
+#             "Current_Ratio": 31.25,
+#             "Measure_Current_Switch": "OFF",
+#             "COUPLING": "DC",
+#             "PROBE": "10X",
+#             "SCALE": "200mV",
+#             "OFFSET": 0,
+#             "FREQUENCE": 50.93609,
+#             "INVERSE": "OFF"
+#         },
+#         {
+#             "NAME": "CH3",
+#             "DISPLAY": "ON",
+#             "Current_Rate": 10000.0,
+#             "Current_Ratio": 3.125,
+#             "Measure_Current_Switch": "OFF",
+#             "COUPLING": "DC",
+#             "PROBE": "10X",
+#             "SCALE": "200mV",
+#             "OFFSET": 0,
+#             "FREQUENCE": 50.93609,
+#             "INVERSE": "OFF"
+#         },
+#         {
+#             "NAME": "CH4",
+#             "DISPLAY": "ON",
+#             "Current_Rate": 100000.0,
+#             "Current_Ratio": 31.25,
+#             "Measure_Current_Switch": "OFF",
+#             "COUPLING": "DC",
+#             "PROBE": "10X",
+#             "SCALE": "200mV",
+#             "OFFSET": 0,
+#             "FREQUENCE": 50.93609,
+#             "INVERSE": "OFF"
+#         }
+#     ],
+#     "DATATYPE": "WAVEDEPMEM",
+#     "RUNSTATUS": "STOP",
+#     "IDN": "OWON,XDS3064E,2009110,V2.3.1",
+#     "MODEL": "306400101"
+# }
+# ========================================
+file_path = "2025-09-15 15_09_46_335_AllSensorsWorkingInit.bin"

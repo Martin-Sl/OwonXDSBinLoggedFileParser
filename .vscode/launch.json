@@ -8,11 +8,13 @@
             "name": "Python Debugger: Current File",
             "type": "debugpy",
             "request": "launch",
-            "program": "${file}",
+            "program": "owonparse.py",
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "20251102_0842162sigs.bin"
+                "--file",
+                "2025-09-15 15_09_46_335_AllSensorsWorkingInit.bin"
+                //"20251102_0842162sigs.bin"
             ]
         }
     ]

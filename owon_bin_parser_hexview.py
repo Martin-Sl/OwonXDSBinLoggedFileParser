@@ -5,10 +5,7 @@ import json, re
 import os
 from asammdf import MDF, Signal
 
-def parse(file_path, plot = False, dump_header = False):
-    with open(file_path, "rb") as f:
-        blob = f.read()
-
+def parseHeader(blob):
     # --- Find SPBXDS header ---
     i = blob.find(b"SPBXDS")
     if i < 0:
@@ -35,15 +32,38 @@ def parse(file_path, plot = False, dump_header = False):
     print("=== Full OWON Header ===")
     print(json.dumps(header, indent=4))
     print("="*40)
+    channelHeaderInJson = ""
+    datatype = header.get("DATATYPE", "")
+    n_samples = 0
+    adc_dt = 0.0
+    if datatype == "WAVEDEPMEM":
+        channelHeaderInJson = "CHANNEL"
+        n_samples = header.get("SAMPLE", 0).get("DATALEN", 0)
+        samplerate = header.get("SAMPLE", 0).get("SAMPLERATE", "")
+        if samplerate == "(1MS/s)":
+            adc_dt = 1e-6
+        hdr_end = end + 5
+        
+    elif datatype == "":
+        # --- Extract channel identifiers ---
+        hdr_end = end + 5
+        channelHeaderInJson = "channel"
+        n_channels = len(header.get(channelHeaderInJson, []))
+        ch_id = blob[hdr_end:hdr_end]
 
-    # --- Extract channel identifiers ---
-    hdr_end = end + 1
-    n_channels = len(header.get("channel", []))
-    ch_id = blob[hdr_end:hdr_end+4]
-    hdr_end += 4
+        for ch_idx, ch in enumerate(header.get(channelHeaderInJson, [])):
+            n_samples = int(ch.get("Data_Length"))
+            adc_dt = float(ch.get("Adc_Data_Time").replace("us",""))*1e-6
+        print(f"Found {n_channels} channel ID: {ch_id.hex(' ')}")
 
-    print(f"Found {n_channels} channel ID: {ch_id.hex(' ')}")
+    return header, hdr_end, channelHeaderInJson, n_samples, adc_dt
 
+
+def parse(file_path, plot = False, dump_header = False):
+    with open(file_path, "rb") as f:
+        blob = f.read()
+
+    header, hdr_end, channelHeaderInJson, n_samples, adc_dt = parseHeader(blob)
     raw16 = blob[hdr_end:hdr_end+32]
     # print first few samples of data in hex
     print("Data start (hex):", raw16[:32].hex(' '))
@@ -54,14 +74,30 @@ def parse(file_path, plot = False, dump_header = False):
     mdfSignals = []
 
     # --- Extract waveform data per channel ---
-    for ch_idx, ch in enumerate(header.get("channel", [])):
+    for ch_idx, ch in enumerate(header.get(channelHeaderInJson, [])):
         print(f"\n--- Channel {ch_idx+1} ({ch.get('Index','?')}) ---")
-        n_samples = int(ch.get("Data_Length"))
-        ref_zero = int(ch.get("Reference_Zero"))
-        v_rate = float(ch.get("Voltage_Rate").replace("mv",""))*1e-3
-
-        probe = float(ch.get("Probe_Magnification").replace("X",""))
-        adc_dt = float(ch.get("Adc_Data_Time").replace("us",""))*1e-6
+        if (channelHeaderInJson == "channel"):
+            ref_zero = int(ch.get("Reference_Zero"))
+            v_rate = float(ch.get("Voltage_Rate").replace("mv",""))*1e-3
+            probe = float(ch.get("Probe_Magnification").replace("X",""))
+        elif (channelHeaderInJson == "CHANNEL"):
+            #  "NAME": "CH2",
+            # "DISPLAY": "ON",
+            # "Current_Rate": 100000.0,
+            # "Current_Ratio": 31.25,
+            # "Measure_Current_Switch": "OFF",
+            # "COUPLING": "DC",
+            # "PROBE": "10X",
+            # "SCALE": "200mV",
+            # "OFFSET": 0,
+            # "FREQUENCE": 50.93609,
+            # "INVERSE": "OFF"
+            ref_zero = int(ch.get("OFFSET"))
+            curr_rate = float(ch.get("Current_Rate"))
+            curr_ratio = float(ch.get("Current_Ratio"))
+            
+            probe = float(ch.get("PROBE").replace("X",""))
+            v_rate = curr_ratio/curr_rate/probe
 
         # waveform start after header + channel IDs
         data_start = hdr_end+ch_idx*4+n_samples*2*ch_idx
