@@ -296,3 +296,40 @@ file_path = "20251102_0842162sigs.bin"
 # }
 # ========================================
 file_path = "2025-09-15 15_09_46_335_AllSensorsWorkingInit.bin"
+
+# === Full OWON Header ===
+#20251102_105325kline100ksap.bin
+# {
+#     "MODEL": "306400101",
+#     "IDN": "OWON,XDS3064E,2009110,V2.3.1",
+#     "channel": [
+#         {
+#             "Index": "CH1",
+#             "Availability_Flag": "TRUE",
+#             "Display_Switch": "OFF",
+#             "Wave_Character": "CH1",
+#             "Sample_Rate": "(100KS/s)",
+#             "Acqu_Mode": "SAMPle",
+#             "Storage_Depth": "40M",
+#             "Display_Mode": "Scan",
+#             "Hscale": "20s",
+#             "Vscale": "500mV",
+#             "Reference_Zero": "-150",
+#             "Scroll_Pos_Time": "0.000000us",
+#             "Trig_After_Time": "48000000.000000us",
+#             "Trig_Tops_Tme": "48000000.000000us",
+#             "Adc_Data_Time": "10.000000us",
+#             "Adc_Data0_Time": "0.000000us",
+#             "Voltage_Rate": "0.078125mv",
+#             "Data_Length": "1279980",
+#             "Probe_Magnification": "10X",
+#             "Current_Rate": 10000.0,
+#             "Current_Ratio": 7.8125,
+#             "Measure_Current_Switch": "OFF",
+#             "Cyc": "96.239599us",
+#             "Freq": "10390.733252Hz",
+#             "PRECISION": 0
+#         }
+#     ]
+# }
+# ========================================

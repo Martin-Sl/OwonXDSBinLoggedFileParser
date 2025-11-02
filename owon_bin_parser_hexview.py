@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import json, re
 import os
 from asammdf import MDF, Signal
+import humanfriendly
 
 def parseHeader(blob):
     # --- Find SPBXDS header ---
@@ -36,34 +37,39 @@ def parseHeader(blob):
     datatype = header.get("DATATYPE", "")
     n_samples = 0
     adc_dt = 0.0
+    bufferLen = 0
     if datatype == "WAVEDEPMEM":
         channelHeaderInJson = "CHANNEL"
         n_samples = header.get("SAMPLE", 0).get("DATALEN", 0)
         samplerate = header.get("SAMPLE", 0).get("SAMPLERATE", "")
+        bufferLen = humanfriendly.parse_size(header.get("SAMPLE", 0).get("DEPMEM", ""))
         if samplerate == "(1MS/s)":
             adc_dt = 1e-6
-        hdr_end = end + 5
+        hdr_end = end
+        ch_id = blob[end+1:end+5]
+        print(f"Found {n_channels} channel ID: {ch_id.hex(' ')}")
         
     elif datatype == "":
         # --- Extract channel identifiers ---
-        hdr_end = end + 5
+        hdr_end = end
         channelHeaderInJson = "channel"
         n_channels = len(header.get(channelHeaderInJson, []))
-        ch_id = blob[hdr_end:hdr_end]
+        ch_id = blob[end+1:end+5]
 
         for ch_idx, ch in enumerate(header.get(channelHeaderInJson, [])):
             n_samples = int(ch.get("Data_Length"))
             adc_dt = float(ch.get("Adc_Data_Time").replace("us",""))*1e-6
+            bufferLen = humanfriendly.parse_size(ch.get("Storage_Depth"))
         print(f"Found {n_channels} channel ID: {ch_id.hex(' ')}")
 
-    return header, hdr_end, channelHeaderInJson, n_samples, adc_dt
+    return header, hdr_end, channelHeaderInJson, n_samples, adc_dt, bufferLen
 
 
 def parse(file_path, plot = False, dump_header = False):
     with open(file_path, "rb") as f:
         blob = f.read()
 
-    header, hdr_end, channelHeaderInJson, n_samples, adc_dt = parseHeader(blob)
+    header, hdr_end, channelHeaderInJson, n_samples, adc_dt, bufferLen = parseHeader(blob)
     raw16 = blob[hdr_end:hdr_end+32]
     # print first few samples of data in hex
     print("Data start (hex):", raw16[:32].hex(' '))
@@ -95,16 +101,28 @@ def parse(file_path, plot = False, dump_header = False):
             ref_zero = int(ch.get("OFFSET"))
             curr_rate = float(ch.get("Current_Rate"))
             curr_ratio = float(ch.get("Current_Ratio"))
-            
             probe = float(ch.get("PROBE").replace("X",""))
             v_rate = curr_ratio/curr_rate/probe
 
         # waveform start after header + channel IDs
-        data_start = hdr_end+ch_idx*4+n_samples*2*ch_idx
-        data_end = data_start+n_samples*2
-        data_end_file = len(blob)
-        raw16 = blob[data_start:data_end]
-        raw16 = raw16[:len(raw16)]
+        data_start_all = hdr_end
+        print(f"Data starts: {data_start_all:#x}")
+        data_end_file_last_valid_byte = len(blob)-1
+        print(f"Data ends: {data_end_file_last_valid_byte:#x}")
+        bufferLenBytes = bufferLen*2
+
+        # data_end = data_start+n_samples*2
+        # data_end_file = len(blob)
+        
+        data_end_channel = data_start_all+(ch_idx+1)*bufferLenBytes+(ch_idx+1)*4
+        print(f"Data for channel {ch_idx+1} ends: {data_end_channel:#x}")
+        data_start_channel = data_end_channel-n_samples*2
+        print(f"Data for channel {ch_idx+1} starts: {data_start_channel:#x}")
+
+        if data_end_channel > data_end_file_last_valid_byte:
+            print(f"Warning: Channel {ch_idx+1} data end exceeds file size. Adjusting.")
+
+        raw16 = blob[data_start_channel-1:data_end_channel-1]
         # little endian
         # scope stores as a int16_t so need to interpret as such
         dt = np.dtype(np.int16)
@@ -119,6 +137,7 @@ def parse(file_path, plot = False, dump_header = False):
 
         # make 32bit int counts
         counts32 = counts.astype(np.int32)
+        print("First 16 samples (32bit):", counts32[:16])
         # --- Voltage scaling using header fields ---
         volts = (counts32 - ref_zero*128) * v_rate * probe
 
